@@ -1,0 +1,64 @@
+-- Basic Queries:
+-- 1) Retrieve All Users
+SELECT * FROM Users;
+
+-- 2) Retrieve All Vendors
+SELECT * FROM Vendors;
+
+-- 3) Retrieve All Products
+SELECT * FROM Products;
+
+-- 4) Retrieve All Orders
+SELECT * FROM Orders;
+
+-- Validation Queries:
+-- 1) Count Total Users by Role
+SELECT Role, COUNT(*) AS TotalUsers
+FROM Users
+GROUP BY Role;
+
+-- 2) Check Stock Levels for Products
+SELECT Name, Stock
+FROM Products
+WHERE Stock < 50;
+
+-- 3) Orders Pending Payment
+SELECT OrderID, CustomerID, PaymentStatus, ShippingStatus
+FROM Orders
+WHERE PaymentStatus = 'Pending';
+
+-- 4) Total Sales by Vendor
+SELECT 
+    V.StoreName, 
+    SUM(OD.Quantity * OD.Price) AS TotalSales
+FROM 
+    Orders O
+JOIN 
+    OrderDetails OD ON O.OrderID = OD.OrderID
+JOIN 
+    Products P ON OD.ProductID = P.ProductID
+JOIN 
+    Vendors V ON P.VendorID = V.VendorID
+WHERE 
+    O.PaymentStatus = 'Paid'
+GROUP BY 
+    V.StoreName;
+
+-- Additional Queries:
+-- 1) Get the shipping status of an order:
+SELECT O.OrderID, S.ShippingStatus, S.Carrier, S.TrackingNumber
+FROM Shipping S
+JOIN Orders O ON S.OrderID = O.OrderID
+WHERE O.OrderID = 1;
+
+-- 2) Get the wishlist of a customer:
+SELECT P.Name, P.Price
+FROM Wishlists W
+JOIN Products P ON W.ProductID = P.ProductID
+WHERE W.CustomerID = 1;
+
+-- 3) Get all reviews for a product:
+SELECT R.Rating, R.ReviewText, U.Name AS CustomerName
+FROM Reviews R
+JOIN Users U ON R.CustomerID = U.UserID
+WHERE R.ProductID = 1;
